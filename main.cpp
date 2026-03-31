@@ -14,10 +14,10 @@ void print(std::string promt) {
 }
 
 void showmenu() {
-    print("[+] ==== PASS MANAGER ====");
+    print("\n[+] ==== PASS MANAGER ====");
     print("[+] 1.Записать новый пароль");
-    print("[+] 2.Изменить пароль");
-    print("[+] 3.Посмотреть пароль");
+    print("[+] 2.Посмотреть пароль");
+    print("[+] 3.Очистка базы данных");
     print("[+] 4.Выход");
 }
 
@@ -47,6 +47,42 @@ void add_to_db(std::string name,std::string pass) {
     }
 }
 
+void find_pass(std::string target_name) {
+    std::ifstream file("database.txt");
+    std::string name, encpass;
+    char key= 35;
+    bool found = false;
+    if (!file.is_open()) {
+        print("database.txt не найден!");
+        return;
+    }
+
+    while (std::getline(file,name) && std::getline(file,encpass)) {
+        if (name == target_name) {
+            std::string dec = enc(encpass,key);
+            print("[РЕЗУЛЬТАТ]");
+            print("Сервис: " + name);
+            print("Пароль: " + dec);
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        print("[ОШИБКА] Аккаунт не найден");
+    }
+
+}
+
+void clear_db() {
+    std::ofstream file("database.txt", std::ios::trunc);
+    if (file.is_open()) {
+        file.close();
+        print("База данных полностью очищена!");
+    } else {
+        print("[ОШИБКА] Не удалось обнаружить базу данных!");
+    }
+}
+
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
@@ -65,12 +101,32 @@ int main() {
 
             if (pass.empty() || name.empty()) {
                 print("Вы ничего не ввели!");
-                continue;
             }
+            add_to_db(name,pass);
+            continue;
+        }
+        if (choice == "2") {
+            std::string choice_name = input("Название соцсети: ");
+            find_pass(choice_name);
+            continue;
         }
 
+        if (choice == "3") {
+            std::string confirm = input("Вы уверены, что хотите удалить все пароли? (y/n): ");
+            if (confirm == "y" || confirm == "Y") {
+                clear_db();
+            } else {
+                print("Очистка отменена!");
+            }
+            continue;
+        }
 
-        print("Успешно сохранено! ");
+        if (choice == "4") {
+            print("Завершаю работу!");
+            Sleep(1000);
+            exit(0);
+        }
+
         break;
     }
     // print("Вы ввели: " + name);
@@ -79,7 +135,6 @@ int main() {
     // print("Enc: " + ENCpass);
     // std::string DECpass = enc(ENCpass,35);
     // print("Dec " + DECpass);
-    add_to_db(name,pass);
 
     return 0;
 }
