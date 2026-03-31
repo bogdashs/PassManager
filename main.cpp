@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <windows.h>
 
@@ -33,7 +34,17 @@ std::string enc(std::string data,char key) {
 
 void add_to_db(std::string name,std::string pass) {
     std::ofstream file("database.txt",std::ios::app);
+    if (file.is_open()) {
+        char key = 35;
+        std::string ENCpass = enc(pass,key);
 
+        file << name << "\n";
+        file << ENCpass << "\n";
+        file.close();
+        print("Данные успешно сохраненны!");
+    } else {
+        print("Проверьте состояние database.txt !");
+    }
 }
 
 int main() {
@@ -68,6 +79,7 @@ int main() {
     // print("Enc: " + ENCpass);
     // std::string DECpass = enc(ENCpass,35);
     // print("Dec " + DECpass);
+    add_to_db(name,pass);
 
     return 0;
 }
