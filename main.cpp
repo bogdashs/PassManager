@@ -15,8 +15,17 @@ void print(std::string promt) {
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
-    std::string pass = input("Ваш пароль:");
-    print("Вы ввели: " + pass);
+    std::string pass;
+    while (true) {
+        pass = input("Ваш пароль:");
+        // print("Вы ввели: " + pass);
+        if (pass.empty()) {
+            print("Вы ничего не ввели!\n");
+            continue;
+        }
 
+        break;
+    }
+    print("Вы ввели: " + pass);
     return 0;
 }
