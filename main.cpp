@@ -120,44 +120,52 @@ void clear_db() {
     }
 }
 
-// void login() {
-//     std::string master_path = get_self_path() + ":master";
-//     std::string saved_master,input_pass;
-//     char key = 77;
-//
-//     std::ifstream check_file(master_path);
-//
-//     if (!check_file.is_open()) {
-//         print("\n\n==== ПЕРВЫЙ ЗАПУСК ====");
-//         input_pass = input("Введите МАСТЕР-КЛЮЧ: ");
-//         std::ofstream out(master_path);
-//         if (out.is_open()) {
-//             out << enc(input_pass,key);
-//             out.close();
-//             print("[УСПЕХ] Программа будет перезапущена!");
-//             Sleep(600);
-//             exit(0);
-//         } else {
-//             std::getline(check_file,saved_master);
-//             check_file.close();
-//
-//             while (true) {
-//                 system("cls");
-//                 print("\n==== ВХОД В СИСТЕМУ ====");
-//                 input_pass = input("Введите ваш МАСТЕР-КЛЮЧ: ");
-//
-//                 if (enc(input_pass,key) == saved_master) {
-//                     print("[ДОСТУП РАЗРЕШЕН]");
-//                 } else {
-//                     print("[ДОСТУП НЕ РАЗРЕШЕН]");
-//                     Sleep(700);
-//                     exit(0);
-//                 }
-//             }
-//         }
-//     }
-//
-// }
+void login() {
+    std::string master_path = get_self_path() + ":master";
+    std::string saved_master,input_pass;
+    char key = 77;
+
+    std::ifstream check_file(master_path);
+
+    if (!check_file.is_open()) {
+        print("\n\n==== ПЕРВЫЙ ЗАПУСК ====");
+        input_pass = input("Введите МАСТЕР-КЛЮЧ: ");
+        std::ofstream out(master_path);
+        if (out.is_open()) {
+            out << enc(input_pass,key);
+            out.close();
+            print("[УСПЕХ] Программа будет перезапущена!");
+            Sleep(600);
+            exit(0);
+        }
+    } else {
+        check_file >> saved_master;
+        check_file.close();
+
+        if (saved_master.empty()) {
+            print("[ОШИБКА] БАЗА ДАННЫХ ПОВРЕЖДЕНА");
+            print("[ОШИБКА] НЕМЕДЛЕННО ЗАКРЫВАЮ ПРОГРАММУ");
+            Sleep(500);
+            exit(0);
+        }
+
+        while (true) {
+            system("cls");
+            print("\n==== ВХОД В СИСТЕМУ ====");
+            input_pass = input("Введите ваш МАСТЕР-КЛЮЧ: ");
+
+            if (enc(input_pass,key) == saved_master) {
+                print("\n[MASTER-KEY] ДОСТУП РАЗРЕШЕН\n");
+                return;
+            } else {
+                print("\n[MASTER-KEY] ДОСТУП НЕ РАЗРЕШЕН\n");
+                Sleep(700);
+                exit(0);
+            }
+        }
+    }
+
+}
 
 void full_reset() {
     std::string confirm = input("Вы уверены, что хотите удалить все данные? (y/n): ");
@@ -174,9 +182,10 @@ void full_reset() {
 
 
         std::ofstream id_file(get_self_path() + ":id");
-        if (id_file.is_open()) {}
-        id_file << getHWID();
-        id_file.close();
+        if (id_file.is_open()) {
+            id_file << getHWID();
+            id_file.close();
+        }
 
         print("Все данные стерты, Программа закрывается!");
         Sleep(1000);
@@ -224,7 +233,7 @@ void show_all_servis() {
     std::ifstream file(db_path);
 
     if (!file.is_open()) {
-        print("[ОШИБКА] База данных не найдена");
+        print("\n[ОШИБКА] База данных не найдена");
         return;
     }
 
@@ -252,7 +261,7 @@ int main() {
     SetConsoleOutputCP(65001);
 
     ya_pedik();
-    // login();
+    login();
 
     std::string current_hwid = getHWID();
     std::string pass;
@@ -284,7 +293,7 @@ int main() {
             print("[ОШИБКА] Доступ запрещен!");
             exit(0);
         } else {
-            print("Доступ разрешен!");
+            print("\n[HWID] Доступ разрешен!\n");
         }
     }
 
