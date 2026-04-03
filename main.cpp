@@ -144,10 +144,24 @@ void clear_db() {
 
 void login() {
     std::string master_path = "Data\\__libs__.master"; //master
+    std::string db_path = "Data\\__runtime_cache__.dll"; //db
+    std::string id_path = "Data\\assets_v2.bin"; //id
     std::string saved_master,input_pass;
     char key = generateXORKEY(getHWID());
 
     std::ifstream check_file(master_path);
+    std::ifstream check_file2(id_path);
+    std::ifstream db(db_path);
+
+    if (db.is_open() && (!check_file.is_open() || !check_file2.is_open())) {
+        setColor(12);
+        print("[ОШИБКА] ВЗЛОМ БАЗЫ ДАННЫХ");
+        print("[ОШИБКА] УДАЛЕНИЕ БАЗЫ ДАННЫХ");
+        std::ofstream wipe_db(db_path,std::ios::trunc);
+        wipe_db.close();
+        Sleep(1500);
+        exit(0);
+    }
 
     if (!check_file.is_open()) {
         print("\n\n==== ПЕРВЫЙ ЗАПУСК ====");
@@ -342,6 +356,9 @@ int main() {
         out.close();
         setColor(14);
         print("[HWID] Программа привязана к данному оборудованию");
+        print("[HWID] Программа будет перезапущена");
+        Sleep(1500);
+        exit(0);
         setColor(7);
     } else {
         std::string saved_enc_hwid;
