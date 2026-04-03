@@ -2,6 +2,18 @@
 #include <fstream>
 #include <iostream>
 #include <windows.h>
+#include "utils.h"
+
+char generateXORKEY(std::string hwid) {
+    char dynamicKey = 0;
+    for (char c :hwid) {
+        dynamicKey ^= c;
+    }
+    if (dynamicKey == 0) {
+        dynamicKey = 123;
+    }
+    return dynamicKey;
+}
 
 std::string get_self_path() {
     char buffer[MAX_PATH];
@@ -15,16 +27,6 @@ std::string getHWID() {
     return std::to_string(hwid);
 }
 
-std::string input(std::string promt) {
-    std::string value;
-    std::cout << promt;
-    std::getline(std::cin, value);
-    return value;
-
-}
-void print(std::string promt) {
-    std::cout << promt << std::endl;
-}
 
 void check_sec() {
     if (IsDebuggerPresent()) {
@@ -35,6 +37,7 @@ void check_sec() {
 }
 
 void ya_pedik() {
+    setColor(11);
     print("\n[ИНФО] Программа сделана bogdashs/Keu1oi");
     print("[ИНФО] Мой github: https://github.com/bogdashs");
     print("[ИНФО] Программа полностью бесплатна\n");
@@ -52,20 +55,17 @@ void showmenu() {
 }
 
 std::string enc(std::string data,char key) {
-
     std::string output = data;
-
     for (int i = 0; i < output.size(); i++) {
         output[i] = data[i] ^ key;
     }
-
     return output;
 }
 
 void add_to_db(std::string name,std::string login,std::string email,std::string pass) {
     std::ofstream file(get_self_path() + ":db",std::ios::app);
     if (file.is_open()) {
-        char key = 35;
+        char key = generateXORKEY(getHWID());
         std::string ENCpass = enc(pass,key);
 
         file << name << "\n";
@@ -82,7 +82,7 @@ void add_to_db(std::string name,std::string login,std::string email,std::string 
 void find_pass(std::string target_name) {
     std::ifstream file(get_self_path() + ":db");
     std::string name, login,email,encpass;
-    char key= 35;
+    char key= generateXORKEY(getHWID());
     bool found = false;
     if (!file.is_open()) {
         print("Поток с базой данных не найден");
@@ -92,7 +92,7 @@ void find_pass(std::string target_name) {
     while (std::getline(file,name) && std::getline(file,login) && std::getline(file,email) && std::getline(file,encpass)) {
         if (name == target_name) {
             std::string dec = enc(encpass,key);
-            print("[РЕЗУЛЬТАТ]");
+            print("\n\n[РЕЗУЛЬТАТ]");
             print("Сервис: " + name);
             print("Логин: " + login);
             print("Почта: " + email);
@@ -123,7 +123,7 @@ void clear_db() {
 void login() {
     std::string master_path = get_self_path() + ":master";
     std::string saved_master,input_pass;
-    char key = 77;
+    char key = generateXORKEY(getHWID());
 
     std::ifstream check_file(master_path);
 
@@ -208,7 +208,7 @@ void export_to_db() {
 
     std::string name,login,email,enc_pass;
     int count = 0;
-    char key = 35;
+    char key = generateXORKEY(getHWID());
 
     backup << "==== ЭКСПОРТ ПАРОЛЕЙ ====\n\n";
 
@@ -270,7 +270,7 @@ int main() {
     std::string name;
     std::string choice;
     BOOL isDebuggerPresent;
-    char key = 35;
+    char key = generateXORKEY(getHWID());
 
 
     CheckRemoteDebuggerPresent(GetCurrentProcess(), &isDebuggerPresent);
@@ -281,7 +281,7 @@ int main() {
         out << current_hwid;
         out.close();
 
-        print("Программа привязана к данному оборудованию");
+        print("[HWID] Программа привязана к данному оборудованию");
     } else {
         std::string saved_enc_hwid;
         file >> saved_enc_hwid;
