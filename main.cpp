@@ -10,6 +10,7 @@
 // master = master key
 // id = hwid pc
 // db = database password
+// SHA256 library by https://github.com/kibonga/sha256-cpp?ysclid=mnjbap0dl3233927588
 
 char generateXORKEY(std::string hwid) {
     char dynamicKey = 0;
