@@ -4,6 +4,8 @@
 #include <windows.h>
 #include "utils.h"
 #include <filesystem>
+#include "SHA256.h"
+#include "Utils.h"
 
 // master = master key
 // id = hwid pc
@@ -169,7 +171,7 @@ void login() {
         std::ofstream out(master_path);
 
         if (out.is_open()) {
-            out << enc(input_pass,key);
+            out << sha256(input_pass);
             out.close();
             setColor(10);
             print("[УСПЕХ] Программа будет перезапущена!");
@@ -195,7 +197,7 @@ void login() {
             print("\n==== ВХОД В СИСТЕМУ ====");
             input_pass = input("Введите ваш МАСТЕР-КЛЮЧ: ");
 
-            if (enc(input_pass,key) == saved_master) {
+            if (sha256(input_pass) == saved_master) {
                 setColor(10);
                 print("\n[MASTER-KEY] ДОСТУП РАЗРЕШЕН\n");
                 setColor(7);
