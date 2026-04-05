@@ -72,6 +72,43 @@ class PluginSystem {
         }
     }
 
+    bool dispatchChoice(const std::string& choice) {
+        for (auto plugin : plugins) {
+            if (plugin->handleChoice(choice)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    void onbrodcastAuthSuccess() {
+        for (auto* plugin : plugins) {
+            if (plugin) {
+                plugin->onAuthSuccess();
+            }
+        }
+    }
+
+    void onbrodcastAuthFailure() {
+        for (auto* plugin : plugins) {
+            if (plugin) {
+                plugin->onAuthSuccess();
+            }
+        }
+    }
+
+    void onbrodcastExit() {
+        for (auto* plugin : plugins) {
+            plugin->onPreExit();
+        }
+    }
+
+
+    bool hasPlugins() {
+        return !plugins.empty();
+    }
 
     ~PluginSystem() {
         for (auto& plugin : plugins) delete plugin;

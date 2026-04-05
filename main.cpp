@@ -64,8 +64,12 @@ void showmenu() {
     print("[+] 3.Очистка базы данных");
     print("[+] 4.Бэкап базы данных");
     print("[+] 5.Показать все сервисы");
-    pm.showMenu();
     print("[+] 6.Выход\n");
+
+    if (pm.hasPlugins()) {
+        print("[+] ==== PLUGIN MENU ====");
+        pm.showMenu();
+    }
 }
 
 std::string enc(std::string data,char key) {
@@ -206,6 +210,7 @@ void login() {
                 setColor(10);
                 print("\n[MASTER-KEY] ДОСТУП РАЗРЕШЕН\n");
                 setColor(7);
+                pm.onbrodcastAuthSuccess();
                 Sleep(3000);
                 system("cls");
                 return;
@@ -213,6 +218,7 @@ void login() {
                 setColor(12);
                 print("\n[MASTER-KEY] ДОСТУП НЕ РАЗРЕШЕН\n");
                 setColor(7);
+                pm.onbrodcastAuthFailure();
                 Sleep(700);
                 exit(0);
             }
@@ -412,6 +418,10 @@ int main() {
         }
 
 
+        if (pm.dispatchChoice(choice)) {
+            continue;
+        }
+
         if (choice == "1") {
             name = input("Название соцсети: ");
             login = input("Ваш логин: ");
@@ -456,6 +466,9 @@ int main() {
             setColor(11);
             print("[ИНФО] Завершаю работу!");
             setColor(7);
+
+            pm.onbrodcastExit();
+
             Sleep(1000);
             exit(0);
         }

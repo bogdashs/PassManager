@@ -8,9 +8,20 @@
 
 class PluginManager {
 public:
-    virtual void onInit() = 0;
-    virtual void onMenu() = 0;
-    virtual void onUpdate() = 0;
+
+    virtual void onInit() {};
+    virtual void onMenu() {};
+    virtual void onUpdate() {};
+    virtual void onAuthSuccess() {};
+    virtual void onAuthFailure() {};
+    virtual void onPreExit() {};
+
+
+    virtual bool handleChoice(const std::string& choice) {
+        return false;
+    }
+
+    virtual ~PluginManager() {}
 };
 
 
