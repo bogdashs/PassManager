@@ -20,37 +20,43 @@ class PluginSystem {
 
     void loadPlugins(const std::string& folder_name) {
         namespace fs = std::filesystem;
+        char buffer[MAX_PATH];
+        GetModuleFileNameA(NULL, buffer, MAX_PATH);
+        std::string exePath(buffer);
+        std::string exeDir = exePath.substr(0, exePath.find_last_of("\\/"));
 
-        std::cout << "current folder: " << fs::current_path();
+        std::string fullPath = exeDir + "\\" + folder_name;
 
-        if (!fs::exists(folder_name)) {
-            fs::create_directory(folder_name) ;
-                return;
+        std::cout << "Loading plugins from: " << fullPath << std::endl;
 
+        if (!fs::exists(fullPath)) {
+            fs::create_directory(fullPath);
+            return;
         }
-        for (const auto& entry : fs::directory_iterator(folder_name)) {
-            HMODULE hModule = LoadLibrary(entry.path().string().c_str());
-            if (!hModule) continue;
+
+        for (const auto& entry : fs::directory_iterator(fullPath)) {
+            if (entry.path().extension() != ".dll") continue;
+
+            HMODULE hModule = LoadLibraryA(entry.path().string().c_str());
+            if (!hModule) {
+                std::cout << "Failed to load library: " << entry.path().string()
+                          << " Error: " << GetLastError() << std::endl;
+                continue;
+            }
 
             auto createFunc = (CreatePluginFunc)GetProcAddress(hModule, "CreatePlugin");
 
             if (!createFunc) {
-                print("Failed to load plugin " + entry.path().string());
-            }
-
-            if (createFunc) {
-                PluginManager* manager = createFunc();
-
-                manager->onInit();
-
-                plugins.push_back(manager);
-                library.push_back(hModule);
-
-
-            } else {
+                std::cout << "Failed to get CreatePlugin function from: "
+                          << entry.path().string() << std::endl;
                 FreeLibrary(hModule);
+                continue;
             }
 
+            PluginManager* manager = createFunc();
+            manager->onInit();
+            plugins.push_back(manager);
+            library.push_back(hModule);
         }
     }
 
@@ -59,6 +65,13 @@ class PluginSystem {
             plugin->onMenu();
         }
     }
+
+    void UpdateAll() {
+        for (auto plugin : plugins) {
+            plugin->onUpdate();
+        }
+    }
+
 
     ~PluginSystem() {
         for (auto& plugin : plugins) delete plugin;

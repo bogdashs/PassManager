@@ -12,6 +12,8 @@
 // db = database password
 // SHA256 library by https://github.com/kibonga/sha256-cpp?ysclid=mnjbap0dl3233927588
 
+PluginSystem pm;
+
 char generateXORKEY(std::string hwid) {
     char dynamicKey = 0;
     for (char c :hwid) {
@@ -62,6 +64,7 @@ void showmenu() {
     print("[+] 3.Очистка базы данных");
     print("[+] 4.Бэкап базы данных");
     print("[+] 5.Показать все сервисы");
+    pm.showMenu();
     print("[+] 6.Выход\n");
 }
 
@@ -74,6 +77,7 @@ std::string enc(std::string data,char key) {
 }
 
 void add_to_db(std::string name,std::string login,std::string email,std::string pass) {
+
     std::ofstream file("Data\\__runtime_cache__.dll",std::ios::app); //db
     if (file.is_open()) {
         char key = generateXORKEY(getHWID());
@@ -332,11 +336,15 @@ void createFileSystem() {
     }
 }
 
-PluginSystem pm;
 
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
+
+    std::string exePath = get_self_path();
+    std::string exeDir = exePath.substr(0, exePath.find_last_of("\\/"));
+
+    SetCurrentDirectoryA(exeDir.c_str());
 
     pm.loadPlugins("Plugins");
 
@@ -388,7 +396,7 @@ int main() {
 
     while (true) {
 
-        pm.showMenu();
+        pm.UpdateAll();
 
         check_sec();
 

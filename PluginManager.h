@@ -10,6 +10,7 @@ class PluginManager {
 public:
     virtual void onInit() = 0;
     virtual void onMenu() = 0;
+    virtual void onUpdate() = 0;
 };
 
 
