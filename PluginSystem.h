@@ -21,6 +21,8 @@ class PluginSystem {
     void loadPlugins(const std::string& folder_name) {
         namespace fs = std::filesystem;
 
+        std::cout << "current folder: " << fs::current_path();
+
         if (!fs::exists(folder_name)) {
             fs::create_directory(folder_name) ;
                 return;
