@@ -5,7 +5,7 @@
 #include "utils.h"
 #include <filesystem>
 #include "SHA256.h"
-#include "Utils.h"
+#include "PluginSystem.h"
 
 // master = master key
 // id = hwid pc
@@ -332,14 +332,19 @@ void createFileSystem() {
     }
 }
 
+PluginSystem pm;
+
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
+
+    pm.loadPlugins("Plugins");
 
     createFileSystem();
 
     ya_pedik();
     login();
+
 
 
     std::string current_hwid = getHWID();
@@ -382,6 +387,8 @@ int main() {
     }
 
     while (true) {
+
+        pm.showMenu();
 
         check_sec();
 
