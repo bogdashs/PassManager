@@ -9,8 +9,6 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
-
-#ifdef _WIN32
 #include <windows.h>
 
 class PluginManager {
