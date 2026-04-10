@@ -12,7 +12,7 @@
 
 void UpdaterClass::checkUpdates() {
     std::string VersionGit_url = "https://raw.githubusercontent.com/bogdashs/PassManager/refs/heads/master/version.txt";
-    std::string DownloadGit_url = "https://github.com/bogdashs/PassManager/releases/download/release-1.0/PassManager.exe";
+    std::string DownloadGit_url = "https://github.com/bogdashs/PassManager/releases/latest/download/PassManager.exe";
 
     std::string tempVersion = "Data\\check.tmp";
     std::string tempDownload = "Data\\PassManager_new.exe";
@@ -31,18 +31,19 @@ void UpdaterClass::checkUpdates() {
 
         if (!remoteVersion.empty() && remoteVersion != CURRENT_VERSION) {
             setColor(14);
-            print("[ОБНОВЛЕНИЕ] Доступна новая версия" + remoteVersion);
+            print("[ОБНОВЛЕНИЕ] Доступна новая версия: " + remoteVersion);
             setColor(7);
             std::string choice = input("Желаете обновиться? (y/n): ");
 
             if (choice == "y" || choice == "Y") {
                 setColor(11);
-                print("[ИНФО] Доступна новая версия");
+                print("[ИНФО] Доступна новая версия\n");
                 setColor(7);
 
                 if (URLDownloadToFileA(NULL, DownloadGit_url.c_str(),tempDownload.c_str(),0,NULL) == S_OK) {
                     setColor(10);
-                    print("[УСПЕХ]");
+                    print("[УСПЕХ] Версия скачена!");
+                    Sleep(2000);
                     setColor(7);
 
                     std::string args = "PassManager.exe " + tempDownload;
