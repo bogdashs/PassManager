@@ -16,12 +16,19 @@ add_executable(GuardManager GuardManager.cpp
 
 )
 
+add_executable(Updater Updater.cpp
+
+
+)
+
 add_library(utils utils.cpp utils.h)
 add_library(sha256 sha256-cpp-master/sha256-cpp/sha256-cpp.cpp
             sha256-cpp-master/sha256-cpp/SHA256.h)
 
 target_link_libraries(PassManager utils)
+target_link_libraries(PassManager urlmon)
 target_link_libraries(GuardManager utils)
+target_link_libraries(Updater utils)
 
 target_link_libraries(PassManager sha256)
 

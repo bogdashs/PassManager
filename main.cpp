@@ -6,6 +6,7 @@
 #include <filesystem>
 #include "SHA256.h"
 #include "PluginSystem.h"
+#include "UpdaterClass.h"
 
 
 
@@ -373,6 +374,8 @@ int main() {
     std::string exeDir = exePath.substr(0, exePath.find_last_of("\\/"));
 
     SetCurrentDirectoryA(exeDir.c_str());
+
+    UpdaterClass::checkUpdates();
 
     pm.loadPlugins("Plugins");
 

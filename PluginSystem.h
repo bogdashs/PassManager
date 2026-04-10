@@ -88,8 +88,6 @@ class PluginSystem {
 
         std::string fullPath = exeDir + "\\" + folder_name;
 
-        std::cout << "Loading plugins from: " << fullPath << std::endl;
-
         if (!fs::exists(fullPath)) {
             fs::create_directory(fullPath);
             return;

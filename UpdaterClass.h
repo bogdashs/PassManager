@@ -9,8 +9,8 @@
 
 class UpdaterClass {
 
-    static inline const std::pmr::string CURRENT_VERSION = "1.0.0";
-
+    static inline const std::string CURRENT_VERSION = "1.0.0";
+public:
     static void checkUpdates();
 
 };
