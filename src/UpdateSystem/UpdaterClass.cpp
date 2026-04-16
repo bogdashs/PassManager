@@ -15,7 +15,7 @@ void UpdaterClass::checkUpdates() {
     std::string DownloadGit_url = "https://github.com/bogdashs/PassManager/releases/latest/download/PassManager-release.zip";
 
     std::string tempVersion = "Data\\check.tmp";
-    std::string tempDownload = "Data\\PassManager_new.zip";
+    std::string tempDownload = "Data\\PassManager.zip";
     setColor(11);
     print("[ИНФО] Проверка обновлений");
     setColor(7);
@@ -46,7 +46,7 @@ void UpdaterClass::checkUpdates() {
                     Sleep(2000);
                     setColor(7);
 
-                    std::string args = "PassManager-release.zip " + tempDownload;
+                    std::string args = "PassManager.exe " + tempDownload;
 
                     ShellExecuteA(NULL,"open","Updater.exe",args.c_str(),NULL,SW_SHOW);
 

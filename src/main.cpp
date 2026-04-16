@@ -171,6 +171,18 @@ void clear_db() {
     }
 }
 
+std::string generateSalt() {
+
+std::string goida = "_!@#$%^&())_+GOIDA6767676767767HDAWDUIGAFDFVIAWUFBGIABVIBVPIFBVPAIUBFV!^#&*(%#%^#$^&!$%#";
+
+    char computerName[MAX_COMPUTERNAME_LENGTH + 1];
+
+    DWORD size = sizeof(computerName);
+    GetComputerName(computerName, &size);
+
+    return getHWID() + "_" + std::string(computerName) + goida;
+}
+
 void login() {
     std::string master_path = "Data\\__libs__.master"; //master
     std::string db_path = "Data\\__runtime_cache__.dll"; //db
@@ -198,7 +210,7 @@ void login() {
         std::ofstream out(master_path);
 
         if (out.is_open()) {
-            out << sha256(input_pass);
+            out << sha256(input_pass + generateSalt());
             out.close();
             setColor(10);
             RunSetup::runSetup();
@@ -225,7 +237,7 @@ void login() {
             print("\n==== ВХОД В СИСТЕМУ ====");
             input_pass = input("Введите ваш МАСТЕР-КЛЮЧ: ");
 
-            if (sha256(input_pass) == saved_master) {
+            if (sha256(input_pass + generateSalt()) == saved_master) {
                 setColor(10);
                 print("\n[MASTER-KEY] ДОСТУП РАЗРЕШЕН\n");
                 setColor(7);
