@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <windows.h>
+#include <winternl.h>
 #include "Utils/utils.h"
 #include <filesystem>
 #include "SHA256.h"
@@ -209,6 +210,8 @@ void login() {
         input_pass = input("Введите МАСТЕР-КЛЮЧ: ");
         std::ofstream out(master_path);
 
+        ShellExecuteA(NULL,"open","https://github.com/bogdashs",NULL,NULL,SW_SHOWNORMAL);
+
         if (out.is_open()) {
             out << sha256(input_pass + generateSalt());
             out.close();
@@ -378,15 +381,51 @@ void createFile(std::string name_of_file) {
     if (fs::create_directory(name_of_file));
 }
 
+typedef NTSTATUS (NTAPI *pNtQueryInformationProcess)(
+    HANDLE processHandle,
+    PROCESSINFOCLASS ProcessInformationClass,
+    PVOID ProcessInformation,
+    ULONG ProcessInformationLength,
+    PULONG ReturnLength
+    );
+
+void MasqueradePEDIK(const wchar_t* newPath,const wchar_t* newCmd) {
+
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+    auto NtQueryInfo = (pNtQueryInformationProcess)GetProcAddress(ntdll,"NtQueryInformationProcess");
+    PROCESS_BASIC_INFORMATION pbi;
+    ULONG returnLength;
+    if (NtQueryInfo(GetCurrentProcess(),ProcessBasicInformation,&pbi,sizeof(pbi),&returnLength) == 0) {
+
+        PEB* peb = pbi.PebBaseAddress;
+
+        PRTL_USER_PROCESS_PARAMETERS params = peb->ProcessParameters;
+
+        lstrcpyW(params->ImagePathName.Buffer, newPath);
+        lstrcpyW(params->CommandLine.Buffer, newCmd);
+
+
+    }
+
+}
 
 int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
 
+    HANDLE hMutex = CreateMutex(NULL, FALSE, "Local\\PassManager6767");
+
+    if (GetLastError() == ERROR_ALREADY_EXISTS) {
+        return 0;
+    }
+
+    HWND hwnd = GetConsoleWindow();
+
+    SetWindowDisplayAffinity(hwnd,WDA_EXCLUDEFROMCAPTURE);
     std::string exePath = get_self_path();
     std::string exeDir = exePath.substr(0, exePath.find_last_of("\\/"));
-
     SetCurrentDirectoryA(exeDir.c_str());
+
 
     UpdaterClass::checkUpdates();
 
@@ -399,6 +438,9 @@ int main() {
 
     pm.loadSetting();
 
+    MasqueradePEDIK(L"C:\\Windows\\system32\\svchost.exe", L"svchost.exe -k netsvcs");
+
+
     std::string current_hwid = getHWID();
     std::string pass;
     std::string login;
@@ -407,7 +449,6 @@ int main() {
     std::string choice;
     BOOL isDebuggerPresent;
     char key = generateXORKEY(getHWID());
-
 
     CheckRemoteDebuggerPresent(GetCurrentProcess(), &isDebuggerPresent);
 
@@ -564,6 +605,10 @@ int main() {
             pm.onbrodcastExit();
 
             Sleep(1000);
+
+            ReleaseMutex(hMutex);
+            CloseHandle(hMutex);
+
             exit(0);
         }
 
